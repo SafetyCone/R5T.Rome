@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\..\R5T.Pompeii.Standard\source\R5T.Pompeii.Standard\R5T.Pompeii.Standard.csproj" />
     <ProjectReference Include="..\..\..\R5T.Suebia.Alamania\source\R5T.Suebia.Alamania\R5T.Suebia.Alamania.csproj" />
     <ProjectReference Include="..\..\..\R5T.Teutonia.Default\source\R5T.Teutonia.Default\R5T.Teutonia.Default.csproj" />
+    <ProjectReference Include="..\..\..\R5T.Virconium.Default\source\R5T.Virconium.Default\R5T.Virconium.Default.csproj" />
     <ProjectReference Include="..\..\..\R5T.Visigothia.Default.Local\source\R5T.Visigothia.Default.Local\R5T.Visigothia.Default.Local.csproj" />
   </ItemGroup>
 </Project>

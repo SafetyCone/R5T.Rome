@@ -11,9 +11,11 @@
     <ProjectReference Include="..\..\..\R5T.Bulgaria.Default.Local\source\R5T.Bulgaria.Default.Local\R5T.Bulgaria.Default.Local.csproj" />
     <ProjectReference Include="..\..\..\R5T.Costobocia.Default\source\R5T.Costobocia.Default\R5T.Costobocia.Default.csproj" />
     <ProjectReference Include="..\..\..\R5T.Dacia\source\R5T.Dacia\R5T.Dacia.csproj" />
+    <ProjectReference Include="..\..\..\R5T.Gepidia.Remote\source\R5T.Gepidia.Remote\R5T.Gepidia.Remote.csproj" />
     <ProjectReference Include="..\..\..\R5T.Jutland.Newtonsoft\source\R5T.Jutland.Newtonsoft\R5T.Jutland.Newtonsoft.csproj" />
     <ProjectReference Include="..\..\..\R5T.Lombardy\source\R5T.Lombardy\R5T.Lombardy.csproj" />
     <ProjectReference Include="..\..\..\R5T.Macommania.Default\source\R5T.Macommania.Default\R5T.Macommania.Default.csproj" />
+    <ProjectReference Include="..\..\..\R5T.Pictia.Frisia\source\R5T.Pictia.Frisia\R5T.Pictia.Frisia.csproj" />
     <ProjectReference Include="..\..\..\R5T.Pompeii.Standard\source\R5T.Pompeii.Standard\R5T.Pompeii.Standard.csproj" />
     <ProjectReference Include="..\..\..\R5T.Suebia.Alamania\source\R5T.Suebia.Alamania\R5T.Suebia.Alamania.csproj" />
     <ProjectReference Include="..\..\..\R5T.Teutonia.Default\source\R5T.Teutonia.Default\R5T.Teutonia.Default.csproj" />

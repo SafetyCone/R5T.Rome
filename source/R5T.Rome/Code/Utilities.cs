@@ -29,6 +29,8 @@ using R5T.Suebia;
 using R5T.Suebia.Alamania;
 using R5T.Teutonia;
 using R5T.Teutonia.Default.Extensions;
+using R5T.Virconium;
+using R5T.Virconium.Default;
 using R5T.Visigothia;
 using R5T.Visigothia.Default.Local;
 
@@ -37,6 +39,30 @@ namespace R5T.Rome
 {
     public static class Utilities
     {
+        public static void AddMissingDependencies()
+        {
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton<IVirconiumService, DefaultVirconiumService>()
+
+                .AddSingleton<ISolutionFilePathProvider, StandardDevelopmentSolutionFilePathProvider>()
+                .AddSingleton<ISolutionFileNameProvider, SingleSolutionFileNameProvider>()
+                .AddSingleton<IExecutableFileDirectoryPathProvider, DefaultExecutableFileDirectoryPathProvider>()
+                .AddSingleton<IExecutableFilePathProvider, DefaultExecutableFilePathProvider>()
+
+                .AddSingleton<IStringlyTypedPathOperator, StringlyTypedPathOperator>()
+
+                .BuildServiceProvider()
+                ;
+
+            var solutionFilePathProvider = serviceProvider.GetRequiredService<ISolutionFilePathProvider>();
+
+            var solutionFilePath = solutionFilePathProvider.GetSolutionFilePath();
+
+            var virconiumService = serviceProvider.GetRequiredService<IVirconiumService>();
+
+            virconiumService.AddMissingProjectDependencies(solutionFilePath, Console.Out, false);
+        }
+
         public static void DeployRemote(string remoteDeploymentSecretsFileName, string entryPointProjectName)
         {
             // Build the DI container.

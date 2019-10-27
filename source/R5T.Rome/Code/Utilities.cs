@@ -39,7 +39,21 @@ namespace R5T.Rome
 {
     public static class Utilities
     {
+        public static void RemoveExtraneousDependencies()
+        {
+            var serviceAndSolutionFilePath = Utilities.GetVirconiumFunctionality();
+
+            serviceAndSolutionFilePath.Item1.RemoveExtraneousDependencies(serviceAndSolutionFilePath.Item2, Console.Out, false);
+        }
+
         public static void AddMissingDependencies()
+        {
+            var serviceAndSolutionFilePath = Utilities.GetVirconiumFunctionality();
+
+            serviceAndSolutionFilePath.Item1.AddMissingProjectDependencies(serviceAndSolutionFilePath.Item2, Console.Out, false);
+        }
+
+        private static Tuple<IVirconiumService, string> GetVirconiumFunctionality()
         {
             var serviceProvider = new ServiceCollection()
                 .AddSingleton<IVirconiumService, DefaultVirconiumService>()
@@ -60,7 +74,8 @@ namespace R5T.Rome
 
             var virconiumService = serviceProvider.GetRequiredService<IVirconiumService>();
 
-            virconiumService.AddMissingProjectDependencies(solutionFilePath, Console.Out, false);
+            var output = Tuple.Create(virconiumService, solutionFilePath);
+            return output;
         }
 
         public static void DeployRemote(string remoteDeploymentSecretsFileName, string entryPointProjectName)

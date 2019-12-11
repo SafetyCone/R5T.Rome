@@ -14,6 +14,7 @@ using R5T.Caledonia;
 using R5T.Caledonia.Default;
 using R5T.Costobocia;
 using R5T.Costobocia.Default;
+using R5T.Dacia.Extensions;
 using R5T.Frisia;
 using R5T.Frisia.Suebia;
 using R5T.Gepidia.Local;
@@ -31,6 +32,7 @@ using R5T.Pompeii;
 using R5T.Pompeii.Standard;
 using R5T.Suebia;
 using R5T.Suebia.Alamania;
+using R5T.Suebia.Default;
 using R5T.Teutonia;
 using R5T.Teutonia.Default.Extensions;
 using R5T.Virconium;
@@ -82,7 +84,8 @@ namespace R5T.Rome
             return output;
         }
 
-        public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName)
+        public static void DeployRemoteWebsite<TSolutionFileNameProvider>(string remoteDeploymentSecretsFileName, string entryPointProjectName, TSolutionFileNameProvider solutionFileNameProvider = null)
+            where TSolutionFileNameProvider: class, ISolutionFileNameProvider
         {
             // Build the DI container.
             var serviceProvider = new ServiceCollection()
@@ -97,7 +100,7 @@ namespace R5T.Rome
                 .AddSingleton<IExecutableFilePathProvider, DefaultExecutableFilePathProvider>()
                 .AddSingleton<IExecutableFileDirectoryPathProvider, DefaultExecutableFileDirectoryPathProvider>()
                 .AddSingleton<ISolutionFilePathProvider, StandardSolutionFilePathProvider>()
-                .AddSingleton<ISolutionFileNameProvider, SingleSolutionFileNameProvider>()
+                .AddSingletonAsTypeIfInstanceNull<ISolutionFileNameProvider, TSolutionFileNameProvider>(solutionFileNameProvider)
                 .AddSingleton<IProjectBuildOutputBinariesDirectoryPathProvider, PublishDirectoryProjectBuildOutputBinariesDirectoryPathProvider>() // See possible combination with ***.
                 .UseStandardEntryPointProjectConventions(entryPointProjectName, ReleaseBuildConfiguration.BuildConfigurationName)
                 .AddSingleton<IEntryPointProjectBinariesDirectoryPathProvider, PublishDirectoryEntryPointProjectBinariesDirectoryPathProvider>() // Use the publish directory for websites. ***
@@ -113,7 +116,7 @@ namespace R5T.Rome
                 })
                 .AddSingleton<IRemoteDeploymentSecretsSerializationProvider, DefaultRemoteDeployementSecretsSerializationProvider>()
                 .AddSingleton<IDeploymentDestinationSecretsFileNameProvider>(new DirectDeploymentDestinationSecretsFileNameProvider(remoteDeploymentSecretsFileName))
-                .AddSingleton<ISecretsFilePathProvider, AlamaniaSecretsFilePathProvider>()
+                .AddSingleton<ISecretsFilePathProvider, DefaultSecretsFilePathProvider>()
                 .AddSingleton<ISecretsDirectoryPathProvider, AlamaniaSecretsDirectoryPathProvider>()
                 .AddSingleton<IRivetOrganizationDirectoryPathProvider, BulgariaRivetOrganizationDirectoryPathProvider>()
                 .AddSingleton<IOrganizationDirectoryNameProvider, DefaultOrganizationDirectoryNameProvider>()
@@ -153,6 +156,19 @@ namespace R5T.Rome
             Utilities.Deploy(serviceProvider);
         }
 
+        /// <summary>
+        /// Can use if only a single solution file exists in the solution directory.
+        /// </summary>
+        public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName)
+        {
+            Utilities.DeployRemoteWebsite<SingleSolutionFileNameProvider>(remoteDeploymentSecretsFileName, entryPointProjectName);
+        }
+
+        public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName, string solutionFileName)
+        {
+            Utilities.DeployRemoteWebsite(remoteDeploymentSecretsFileName, entryPointProjectName, new DirectSolutionFileNameProvider(solutionFileName));
+        }
+
         public static void DeployRemote(string remoteDeploymentSecretsFileName, string entryPointProjectName)
         {
             // Build the DI container.
@@ -176,7 +192,7 @@ namespace R5T.Rome
                 })
                 .AddSingleton<IRemoteDeploymentSecretsSerializationProvider, DefaultRemoteDeployementSecretsSerializationProvider>()
                 .AddSingleton<IDeploymentDestinationSecretsFileNameProvider>(new DirectDeploymentDestinationSecretsFileNameProvider(remoteDeploymentSecretsFileName))
-                .AddSingleton<ISecretsFilePathProvider, AlamaniaSecretsFilePathProvider>()
+                .AddSingleton<ISecretsFilePathProvider, DefaultSecretsFilePathProvider>()
                 .AddSingleton<ISecretsDirectoryPathProvider, AlamaniaSecretsDirectoryPathProvider>()
                 .AddSingleton<IRivetOrganizationDirectoryPathProvider, BulgariaRivetOrganizationDirectoryPathProvider>()
                 .AddSingleton<IOrganizationDirectoryNameProvider, DefaultOrganizationDirectoryNameProvider>()
@@ -229,7 +245,7 @@ namespace R5T.Rome
                 .AddSingleton<IDropboxDirectoryPathProvider, DefaultLocalDropboxDirectoryPathProvider>()
                 .AddSingleton<IRivetOrganizationDirectoryPathProvider, BulgariaRivetOrganizationDirectoryPathProvider>()
                 .AddSingleton<ISecretsDirectoryPathProvider, AlamaniaSecretsDirectoryPathProvider>()
-                .AddSingleton<ISecretsFilePathProvider, AlamaniaSecretsFilePathProvider>()
+                .AddSingleton<ISecretsFilePathProvider, DefaultSecretsFilePathProvider>()
                 .AddSingleton<IOrganizationDirectoryNameProvider, DefaultOrganizationDirectoryNameProvider>()
                 .AddSingleton<IOrganizationStringlyTypedPathOperator, DefaultOrganizationStringlyTypedPathOperator>()
                 .AddSingleton<IOrganizationsStringlyTypedPathOperator, DefaultOrganizationsStringlyTypedPathOperator>()

@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using R5T.Alamania;
@@ -24,12 +25,12 @@ using R5T.Jutland.Newtonsoft;
 using R5T.Lombardy;
 using R5T.Macommania;
 using R5T.Macommania.Default;
-using R5T.Norsica;
-using R5T.Norsica.Default;
+using R5T.Norsica.Standard;
 using R5T.Pictia;
 using R5T.Pictia.Frisia;
 using R5T.Pompeii;
 using R5T.Pompeii.Standard;
+using R5T.Sardinia;
 using R5T.Suebia;
 using R5T.Suebia.Alamania;
 using R5T.Suebia.Default;
@@ -87,12 +88,36 @@ namespace R5T.Rome
         public static void DeployRemoteWebsite<TSolutionFileNameProvider>(string remoteDeploymentSecretsFileName, string entryPointProjectName, TSolutionFileNameProvider solutionFileNameProvider = null)
             where TSolutionFileNameProvider: class, ISolutionFileNameProvider
         {
-            // Build the DI container.
-            var serviceProvider = new ServiceCollection()
+            // Build the DI-container for configuring the configuration.
+            var serviceCollection = new ServiceCollection()
+                .AddSingleton<ISecretsFilePathProvider, DefaultSecretsFilePathProvider>()
+                .AddSingleton<ISecretsDirectoryPathProvider, AlamaniaSecretsDirectoryPathProvider>()
+                .AddSingleton<IRivetOrganizationDirectoryPathProvider, BulgariaRivetOrganizationDirectoryPathProvider>()
+                .AddSingleton<IDropboxDirectoryPathProvider, DefaultLocalDropboxDirectoryPathProvider>()
+                .AddSingleton<IOrganizationStringlyTypedPathOperator, DefaultOrganizationStringlyTypedPathOperator>()
+                .AddSingleton<IUserProfileDirectoryPathProvider, DefaultLocalUserProfileDirectoryPathProvider>()
+                .AddSingleton<IOrganizationsStringlyTypedPathOperator, DefaultOrganizationsStringlyTypedPathOperator>()
+                .AddSingleton<IOrganizationDirectoryNameProvider, DefaultOrganizationDirectoryNameProvider>()
+
+                .AddSingleton<IStringlyTypedPathOperator, StringlyTypedPathOperator>()
+                ;
+
+            var configurationServiceProvider = serviceCollection.BuildServiceProvider();
+
+            // Build the configuration.
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddDotnetConfiguration(configurationServiceProvider)
+                ;
+
+            var configuration = configurationBuilder.Build();
+
+            // Build the DI-container.
+            var serviceProvider = serviceCollection
+                .AddConfiguration(configuration)
+
                 // Publishing.
                 .AddSingleton<IPublishOperation, DotnetPublishOperation>()
-                .AddSingleton<IDotnetCommandLineOperator, DotnetCommandLineOperator>()
-                .AddSingleton<IDotnetCommandLineOperatorCore, DefaultDotnetCommandLineOperatorCore>()
+                .AddDotnetOperator()
                 .AddSingleton<ICommandLineInvocationOperator, DefaultCommandLineInvocationOperator>()
 
                 // Deployment source file-system site.
@@ -102,7 +127,8 @@ namespace R5T.Rome
                 .AddSingleton<ISolutionFilePathProvider, StandardSolutionFilePathProvider>()
                 .AddSingletonAsTypeIfInstanceNull<ISolutionFileNameProvider, TSolutionFileNameProvider>(solutionFileNameProvider)
                 .AddSingleton<IProjectBuildOutputBinariesDirectoryPathProvider, PublishDirectoryProjectBuildOutputBinariesDirectoryPathProvider>() // See possible combination with ***.
-                .UseStandardEntryPointProjectConventions(entryPointProjectName, ReleaseBuildConfiguration.BuildConfigurationName)
+                .UseStandardEntryPointProjectConventions(entryPointProjectName, "Debug")
+                //.UseStandardEntryPointProjectConventions(entryPointProjectName, ReleaseBuildConfiguration.BuildConfigurationName)
                 .AddSingleton<IEntryPointProjectBinariesDirectoryPathProvider, PublishDirectoryEntryPointProjectBinariesDirectoryPathProvider>() // Use the publish directory for websites. ***
 
                 // Deployment destination file-system site.
@@ -116,14 +142,7 @@ namespace R5T.Rome
                 })
                 .AddSingleton<IRemoteDeploymentSecretsSerializationProvider, DefaultRemoteDeployementSecretsSerializationProvider>()
                 .AddSingleton<IDeploymentDestinationSecretsFileNameProvider>(new DirectDeploymentDestinationSecretsFileNameProvider(remoteDeploymentSecretsFileName))
-                .AddSingleton<ISecretsFilePathProvider, DefaultSecretsFilePathProvider>()
-                .AddSingleton<ISecretsDirectoryPathProvider, AlamaniaSecretsDirectoryPathProvider>()
-                .AddSingleton<IRivetOrganizationDirectoryPathProvider, BulgariaRivetOrganizationDirectoryPathProvider>()
-                .AddSingleton<IOrganizationDirectoryNameProvider, DefaultOrganizationDirectoryNameProvider>()
-                .AddSingleton<IOrganizationStringlyTypedPathOperator, DefaultOrganizationStringlyTypedPathOperator>()
-                .AddSingleton<IOrganizationsStringlyTypedPathOperator, DefaultOrganizationsStringlyTypedPathOperator>()
-                .AddSingleton<IDropboxDirectoryPathProvider, DefaultLocalDropboxDirectoryPathProvider>()
-                .AddSingleton<IUserProfileDirectoryPathProvider, DefaultLocalUserProfileDirectoryPathProvider>()
+                
                 .AddSingleton<RemoteFileSystemOperator>()
                 .AddTransient<SftpClientWrapper>(serviceProviderInstance =>
                 {
@@ -141,7 +160,6 @@ namespace R5T.Rome
 
                 // Utilities.
                 .AddSingleton<IJsonFileSerializationOperator, NewtonsoftJsonFileSerializationOperator>()
-                .AddSingleton<IStringlyTypedPathOperator, StringlyTypedPathOperator>()
                 .AddSingleton<LocalFileSystemOperator>() // For source.
                 .AddSingleton<RemoteFileSystemOperator>() // For destination.
 

@@ -116,7 +116,7 @@ namespace R5T.Rome
                 .AddConfiguration(configuration)
 
                 // Publishing.
-                .AddPublicationOperator(
+                .AddPublishAction(
                     services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName),
                     services.AddDirectEntryPointProjectBuildConfigurationNameProviderAction(buildConfigurationName))
 
@@ -124,36 +124,10 @@ namespace R5T.Rome
                 .AddPublishDeploymentSourceFileSystemSiteProvider(
                     services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName),
                     services.AddDirectEntryPointProjectBuildConfigurationNameProviderAction(buildConfigurationName))
-                //.AddDeploymentSourceFileSystemSiteProvider(
-                //    addSolutionFileNameProvider,
-                //    services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName))
 
                 // Deployment destination file-system site.
                 .AddRemoteDeploymentDestinationFileSystemSiteProvider(
                     services.AddDirectDeploymentDestinationSecretsFileNameProviderAction(remoteDeploymentSecretsFileName))
-            //    .AddSingleton<IDeploymentDestinationFileSystemSiteProvider, SecretsFileRemoteDeploymentDestinationFileSystemSiteProvider>()
-            //    .AddSingleton<RemoteDeploymentSecretsSerialization>(serviceProviderInstance =>
-            //    {
-            //        var serializationProvider = serviceProviderInstance.GetRequiredService<IRemoteDeploymentSecretsSerializationProvider>();
-
-            //        var serialization = serializationProvider.GetRemoteDeploymentSecretsSerialization();
-            //        return serialization;
-            //    })
-            //    .AddSingleton<IRemoteDeploymentSecretsSerializationProvider, DefaultRemoteDeployementSecretsSerializationProvider>()
-            //    .AddSingleton<IDeploymentDestinationSecretsFileNameProvider>(new DirectDeploymentDestinationSecretsFileNameProvider(remoteDeploymentSecretsFileName))
-
-            //    .AddSingleton<RemoteFileSystemOperator>()
-            //    .AddTransient<SftpClientWrapper>(serviceProviderInstance =>
-            //    {
-            //        var sftpClientWrapperProvider = serviceProviderInstance.GetRequiredService<ISftpClientWrapperProvider>();
-
-            //        var sftpClientWrapper = sftpClientWrapperProvider.GetSftpClientWrapper();
-            //        return sftpClientWrapper;
-            //    })
-            //    .AddSingleton<ISftpClientWrapperProvider, FrisiaSftpClientWrapperProvider>()
-            //    .AddSingleton<IAwsEc2ServerSecretsProvider, SuebiaAwsEc2ServerSecretsProvider>()
-            //    .AddSingleton<IAwsEc2ServerSecretsFileNameProvider, RemoteDeploymentSerializationAwsEc2ServerSecretsFileNameProvider>()
-            //    .AddSingleton<IAwsEc2ServerHostFriendlyNameProvider, RemoteDeploymentSerializationAwsEc2ServerHostFriendlyNameProvider>()
 
                 .AddFileSystemCloningOperator()
                 ;
@@ -161,9 +135,9 @@ namespace R5T.Rome
             var serviceProvider = services.BuildServiceProvider();
 
             // Publish.
-            var publishOperation = serviceProvider.GetRequiredService<IPublicationOperator>();
+            var publishAction = serviceProvider.GetRequiredService<IPublishAction>();
 
-            publishOperation.Publish();
+            publishAction.Publish();
 
             // Deploy.
             Utilities.Deploy(serviceProvider);

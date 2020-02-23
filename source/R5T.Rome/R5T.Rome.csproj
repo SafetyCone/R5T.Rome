@@ -6,8 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\R5T.Alamania.Bulgaria\source\R5T.Alamania.Bulgaria\R5T.Alamania.Bulgaria.csproj" />
-    <ProjectReference Include="..\..\..\R5T.Angleterria.Default\source\R5T.Angleterria.Default\R5T.Angleterria.Default.csproj" />
-    <ProjectReference Include="..\..\..\R5T.Antium.Default\source\R5T.Antium.Default\R5T.Antium.Default.csproj" />
+    <ProjectReference Include="..\..\..\R5T.Antium.Standard\source\R5T.Antium.Standard\R5T.Antium.Standard.csproj" />
     <ProjectReference Include="..\..\..\R5T.Bulgaria.Default.Local\source\R5T.Bulgaria.Default.Local\R5T.Bulgaria.Default.Local.csproj" />
     <ProjectReference Include="..\..\..\R5T.Caledonia.Default\source\R5T.Caledonia.Default\R5T.Caledonia.Default.csproj" />
     <ProjectReference Include="..\..\..\R5T.Costobocia.Default\source\R5T.Costobocia.Default\R5T.Costobocia.Default.csproj" />
@@ -21,8 +20,7 @@
     <ProjectReference Include="..\..\..\R5T.Pompeii.Standard\source\R5T.Pompeii.Standard\R5T.Pompeii.Standard.csproj" />
     <ProjectReference Include="..\..\..\R5T.Suebia.Alamania\source\R5T.Suebia.Alamania\R5T.Suebia.Alamania.csproj" />
     <ProjectReference Include="..\..\..\R5T.Suebia.Default\source\R5T.Suebia.Default\R5T.Suebia.Default.csproj" />
-    <ProjectReference Include="..\..\..\R5T.Teutonia.Default\source\R5T.Teutonia.Default\R5T.Teutonia.Default.csproj" />
+    <ProjectReference Include="..\..\..\R5T.Teutonia.Standard\source\R5T.Teutonia.Standard\R5T.Teutonia.Standard.csproj" />
     <ProjectReference Include="..\..\..\R5T.Virconium.Default\source\R5T.Virconium.Default\R5T.Virconium.Default.csproj" />
-    <ProjectReference Include="..\..\..\R5T.Visigothia.Default.Local\source\R5T.Visigothia.Default.Local\R5T.Visigothia.Default.Local.csproj" />
   </ItemGroup>
 </Project>

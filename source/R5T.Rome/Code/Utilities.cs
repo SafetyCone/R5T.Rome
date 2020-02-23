@@ -99,7 +99,7 @@ namespace R5T.Rome
 
             // Build the DI-container for configuring the configuration.
             var services = new ServiceCollection()
-                .AddSecretsFilePathProvider()
+                .AddSecretsDirectoryFilePathProvider()
                 ;
 
             var configurationServiceProvider = services.BuildServiceProvider();

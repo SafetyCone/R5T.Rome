@@ -118,12 +118,12 @@ namespace R5T.Rome
                 // Publishing.
                 .AddPublishAction(
                     services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName),
-                    services.AddDirectEntryPointProjectBuildConfigurationNameProviderAction(buildConfigurationName))
+                    services.AddDirectBuildConfigurationNameProviderAction(buildConfigurationName))
 
                 // Deployment source file-system site.
                 .AddPublishDeploymentSourceFileSystemSiteProvider(
                     services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName),
-                    services.AddDirectEntryPointProjectBuildConfigurationNameProviderAction(buildConfigurationName))
+                    services.AddDirectBuildConfigurationNameProviderAction(buildConfigurationName))
 
                 // Deployment destination file-system site.
                 .AddRemoteDeploymentDestinationFileSystemSiteProvider(

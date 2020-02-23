@@ -9,13 +9,16 @@ using R5T.Angleterria;
 using R5T.Angleterria.Default;
 using R5T.Antium;
 using R5T.Antium.Default;
+using R5T.Antium.Standard;
 using R5T.Bulgaria;
 using R5T.Bulgaria.Default.Local;
 using R5T.Caledonia;
 using R5T.Caledonia.Default;
 using R5T.Costobocia;
 using R5T.Costobocia.Default;
+using R5T.Dacia;
 using R5T.Dacia.Extensions;
+using R5T.Exeter;
 using R5T.Frisia;
 using R5T.Frisia.Suebia;
 using R5T.Gepidia.Local;
@@ -25,21 +28,23 @@ using R5T.Jutland.Newtonsoft;
 using R5T.Lombardy;
 using R5T.Macommania;
 using R5T.Macommania.Default;
+using R5T.Macommania.Standard;
 using R5T.Norsica.Standard;
 using R5T.Pictia;
 using R5T.Pictia.Frisia;
 using R5T.Pompeii;
+using R5T.Pompeii.Default;
 using R5T.Pompeii.Standard;
-using R5T.Sardinia;
 using R5T.Suebia;
 using R5T.Suebia.Alamania;
 using R5T.Suebia.Default;
+using R5T.Suebia.Standard;
 using R5T.Teutonia;
-using R5T.Teutonia.Default.Extensions;
+using R5T.Teutonia.Standard;
 using R5T.Virconium;
 using R5T.Virconium.Default;
 using R5T.Visigothia;
-using R5T.Visigothia.Default.Local;
+//using R5T.Visigothia.Default.Local;
 
 
 namespace R5T.Rome
@@ -62,47 +67,42 @@ namespace R5T.Rome
 
         private static Tuple<IVirconiumService, string> GetVirconiumFunctionality()
         {
-            var serviceProvider = new ServiceCollection()
-                .AddSingleton<IVirconiumService, DefaultVirconiumService>()
+            //var serviceProvider = new ServiceCollection()
+            //    .AddSingleton<IVirconiumService, DefaultVirconiumService>()
 
-                .AddSingleton<ISolutionFilePathProvider, StandardSolutionFilePathProvider>()
-                .AddSingleton<ISolutionFileNameProvider, SingleSolutionFileNameProvider>()
-                .AddSingleton<IExecutableFileDirectoryPathProvider, DefaultExecutableFileDirectoryPathProvider>()
-                .AddSingleton<IExecutableFilePathProvider, DefaultExecutableFilePathProvider>()
+            //    .AddSingleton<ISolutionFilePathProvider, StandardSolutionFilePathProvider>()
+            //    .AddSingleton<ISolutionFileNameProvider, SingleSolutionFileNameProvider>()
+            //    .AddSingleton<IExecutableFileDirectoryPathProvider, DefaultExecutableFileDirectoryPathProvider>()
+            //    .AddSingleton<IExecutableFilePathProvider, DefaultExecutableFilePathProvider>()
 
-                .AddSingleton<IStringlyTypedPathOperator, StringlyTypedPathOperator>()
+            //    .AddSingleton<IStringlyTypedPathOperator, StringlyTypedPathOperator>()
 
-                .BuildServiceProvider()
-                ;
+            //    .BuildServiceProvider()
+            //    ;
 
-            var solutionFilePathProvider = serviceProvider.GetRequiredService<ISolutionFilePathProvider>();
+            //var solutionFilePathProvider = serviceProvider.GetRequiredService<ISolutionFilePathProvider>();
 
-            var solutionFilePath = solutionFilePathProvider.GetSolutionFilePath();
+            //var solutionFilePath = solutionFilePathProvider.GetSolutionFilePath();
 
-            var virconiumService = serviceProvider.GetRequiredService<IVirconiumService>();
+            //var virconiumService = serviceProvider.GetRequiredService<IVirconiumService>();
 
-            var output = Tuple.Create(virconiumService, solutionFilePath);
-            return output;
+            //var output = Tuple.Create(virconiumService, solutionFilePath);
+            //return output;
+
+            throw new NotImplementedException();
         }
 
-        public static void DeployRemoteWebsite<TSolutionFileNameProvider>(string remoteDeploymentSecretsFileName, string entryPointProjectName, TSolutionFileNameProvider solutionFileNameProvider = null)
-            where TSolutionFileNameProvider: class, ISolutionFileNameProvider
+        public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName,
+            ServiceAction<ISolutionFileNameProvider> addSolutionFileNameProvider)
         {
-            // Build the DI-container for configuring the configuration.
-            var serviceCollection = new ServiceCollection()
-                .AddSingleton<ISecretsFilePathProvider, DefaultSecretsFilePathProvider>()
-                .AddSingleton<ISecretsDirectoryPathProvider, AlamaniaSecretsDirectoryPathProvider>()
-                .AddSingleton<IRivetOrganizationDirectoryPathProvider, BulgariaRivetOrganizationDirectoryPathProvider>()
-                .AddSingleton<IDropboxDirectoryPathProvider, DefaultLocalDropboxDirectoryPathProvider>()
-                .AddSingleton<IOrganizationStringlyTypedPathOperator, DefaultOrganizationStringlyTypedPathOperator>()
-                .AddSingleton<IUserProfileDirectoryPathProvider, DefaultLocalUserProfileDirectoryPathProvider>()
-                .AddSingleton<IOrganizationsStringlyTypedPathOperator, DefaultOrganizationsStringlyTypedPathOperator>()
-                .AddSingleton<IOrganizationDirectoryNameProvider, DefaultOrganizationDirectoryNameProvider>()
+            var buildConfigurationName = "Debug";
 
-                .AddSingleton<IStringlyTypedPathOperator, StringlyTypedPathOperator>()
+            // Build the DI-container for configuring the configuration.
+            var services = new ServiceCollection()
+                .AddSecretsFilePathProvider()
                 ;
 
-            var configurationServiceProvider = serviceCollection.BuildServiceProvider();
+            var configurationServiceProvider = services.BuildServiceProvider();
 
             // Build the configuration.
             var configurationBuilder = new ConfigurationBuilder()
@@ -112,65 +112,60 @@ namespace R5T.Rome
             var configuration = configurationBuilder.Build();
 
             // Build the DI-container.
-            var serviceProvider = serviceCollection
+            services
                 .AddConfiguration(configuration)
 
                 // Publishing.
-                .AddSingleton<IPublishOperation, DotnetPublishOperation>()
-                .AddDotnetOperator()
-                .AddSingleton<ICommandLineInvocationOperator, DefaultCommandLineInvocationOperator>()
+                .AddPublicationOperator(
+                    services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName),
+                    services.AddDirectEntryPointProjectBuildConfigurationNameProviderAction(buildConfigurationName))
 
                 // Deployment source file-system site.
-                .AddSingleton<IDeploymentSourceFileSystemSiteProvider, DefaultDeploymentSourceFileSystemSiteProvider>()
-                .AddSingleton<IExecutableFilePathProvider, DefaultExecutableFilePathProvider>()
-                .AddSingleton<IExecutableFileDirectoryPathProvider, DefaultExecutableFileDirectoryPathProvider>()
-                .AddSingleton<ISolutionFilePathProvider, StandardSolutionFilePathProvider>()
-                .AddSingletonAsTypeIfInstanceNull<ISolutionFileNameProvider, TSolutionFileNameProvider>(solutionFileNameProvider)
-                .AddSingleton<IProjectBuildOutputBinariesDirectoryPathProvider, PublishDirectoryProjectBuildOutputBinariesDirectoryPathProvider>() // See possible combination with ***.
-                .UseStandardEntryPointProjectConventions(entryPointProjectName, "Debug")
-                //.UseStandardEntryPointProjectConventions(entryPointProjectName, ReleaseBuildConfiguration.BuildConfigurationName)
-                .AddSingleton<IEntryPointProjectBinariesDirectoryPathProvider, PublishDirectoryEntryPointProjectBinariesDirectoryPathProvider>() // Use the publish directory for websites. ***
+                .AddPublishDeploymentSourceFileSystemSiteProvider(
+                    services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName),
+                    services.AddDirectEntryPointProjectBuildConfigurationNameProviderAction(buildConfigurationName))
+                //.AddDeploymentSourceFileSystemSiteProvider(
+                //    addSolutionFileNameProvider,
+                //    services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName))
 
                 // Deployment destination file-system site.
-                .AddSingleton<IDeploymentDestinationFileSystemSiteProvider, SecretsFileRemoteDeploymentDestinationFileSystemSiteProvider>()
-                .AddSingleton<RemoteDeploymentSecretsSerialization>(serviceProviderInstance =>
-                {
-                    var serializationProvider = serviceProviderInstance.GetRequiredService<IRemoteDeploymentSecretsSerializationProvider>();
+                .AddRemoteDeploymentDestinationFileSystemSiteProvider(
+                    services.AddDirectDeploymentDestinationSecretsFileNameProviderAction(remoteDeploymentSecretsFileName))
+            //    .AddSingleton<IDeploymentDestinationFileSystemSiteProvider, SecretsFileRemoteDeploymentDestinationFileSystemSiteProvider>()
+            //    .AddSingleton<RemoteDeploymentSecretsSerialization>(serviceProviderInstance =>
+            //    {
+            //        var serializationProvider = serviceProviderInstance.GetRequiredService<IRemoteDeploymentSecretsSerializationProvider>();
 
-                    var serialization = serializationProvider.GetRemoteDeploymentSecretsSerialization();
-                    return serialization;
-                })
-                .AddSingleton<IRemoteDeploymentSecretsSerializationProvider, DefaultRemoteDeployementSecretsSerializationProvider>()
-                .AddSingleton<IDeploymentDestinationSecretsFileNameProvider>(new DirectDeploymentDestinationSecretsFileNameProvider(remoteDeploymentSecretsFileName))
-                
-                .AddSingleton<RemoteFileSystemOperator>()
-                .AddTransient<SftpClientWrapper>(serviceProviderInstance =>
-                {
-                    var sftpClientWrapperProvider = serviceProviderInstance.GetRequiredService<ISftpClientWrapperProvider>();
+            //        var serialization = serializationProvider.GetRemoteDeploymentSecretsSerialization();
+            //        return serialization;
+            //    })
+            //    .AddSingleton<IRemoteDeploymentSecretsSerializationProvider, DefaultRemoteDeployementSecretsSerializationProvider>()
+            //    .AddSingleton<IDeploymentDestinationSecretsFileNameProvider>(new DirectDeploymentDestinationSecretsFileNameProvider(remoteDeploymentSecretsFileName))
 
-                    var sftpClientWrapper = sftpClientWrapperProvider.GetSftpClientWrapper();
-                    return sftpClientWrapper;
-                })
-                .AddSingleton<ISftpClientWrapperProvider, FrisiaSftpClientWrapperProvider>()
-                .AddSingleton<IAwsEc2ServerSecretsProvider, SuebiaAwsEc2ServerSecretsProvider>()
-                .AddSingleton<IAwsEc2ServerSecretsFileNameProvider, RemoteDeploymentSerializationAwsEc2ServerSecretsFileNameProvider>()
-                .AddSingleton<IAwsEc2ServerHostFriendlyNameProvider, RemoteDeploymentSerializationAwsEc2ServerHostFriendlyNameProvider>()
+            //    .AddSingleton<RemoteFileSystemOperator>()
+            //    .AddTransient<SftpClientWrapper>(serviceProviderInstance =>
+            //    {
+            //        var sftpClientWrapperProvider = serviceProviderInstance.GetRequiredService<ISftpClientWrapperProvider>();
 
-                .UseDefaultFileSystemCloningOperator()
+            //        var sftpClientWrapper = sftpClientWrapperProvider.GetSftpClientWrapper();
+            //        return sftpClientWrapper;
+            //    })
+            //    .AddSingleton<ISftpClientWrapperProvider, FrisiaSftpClientWrapperProvider>()
+            //    .AddSingleton<IAwsEc2ServerSecretsProvider, SuebiaAwsEc2ServerSecretsProvider>()
+            //    .AddSingleton<IAwsEc2ServerSecretsFileNameProvider, RemoteDeploymentSerializationAwsEc2ServerSecretsFileNameProvider>()
+            //    .AddSingleton<IAwsEc2ServerHostFriendlyNameProvider, RemoteDeploymentSerializationAwsEc2ServerHostFriendlyNameProvider>()
 
-                // Utilities.
-                .AddSingleton<IJsonFileSerializationOperator, NewtonsoftJsonFileSerializationOperator>()
-                .AddSingleton<LocalFileSystemOperator>() // For source.
-                .AddSingleton<RemoteFileSystemOperator>() // For destination.
-
-                .BuildServiceProvider()
+                .AddFileSystemCloningOperator()
                 ;
 
+            var serviceProvider = services.BuildServiceProvider();
+
             // Publish.
-            var publishOperation = serviceProvider.GetRequiredService<IPublishOperation>();
+            var publishOperation = serviceProvider.GetRequiredService<IPublicationOperator>();
 
-            publishOperation.Execute();
+            publishOperation.Publish();
 
+            // Deploy.
             Utilities.Deploy(serviceProvider);
         }
 
@@ -179,103 +174,122 @@ namespace R5T.Rome
         /// </summary>
         public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName)
         {
-            Utilities.DeployRemoteWebsite<SingleSolutionFileNameProvider>(remoteDeploymentSecretsFileName, entryPointProjectName);
+            void addSolutionFileName(IServiceCollection services) => services.AddSingleSolutionFileNameProvider();
+
+            Utilities.DeployRemoteWebsite(remoteDeploymentSecretsFileName, entryPointProjectName,
+               new ServiceAction<ISolutionFileNameProvider>(addSolutionFileName));
         }
 
         public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName, string solutionFileName)
         {
-            Utilities.DeployRemoteWebsite(remoteDeploymentSecretsFileName, entryPointProjectName, new DirectSolutionFileNameProvider(solutionFileName));
+            void addSolutionFileName(IServiceCollection services) => services.AddDirectSolutionFileNameProvider(solutionFileName);
+
+            Utilities.DeployRemoteWebsite(remoteDeploymentSecretsFileName, entryPointProjectName,
+                new ServiceAction<ISolutionFileNameProvider>(addSolutionFileName));
         }
 
+        /// <summary>
+        /// Deploys a solution to a remote destination, assuming there is only one solution file in the solution directory so that the solution file name does not need to be specified.
+        /// </summary>
         public static void DeployRemote(string remoteDeploymentSecretsFileName, string entryPointProjectName)
         {
+            //// Build the DI container.
+            //var serviceProvider = new ServiceCollection()
+            //    .AddSingleton<IDeploymentSourceFileSystemSiteProvider, DefaultDeploymentSourceFileSystemSiteProvider>()
+            //    .AddSingleton<IExecutableFilePathProvider, DefaultExecutableFilePathProvider>()
+            //    .AddSingleton<IExecutableFileDirectoryPathProvider, DefaultExecutableFileDirectoryPathProvider>()
+            //    .AddSingleton<ISolutionFilePathProvider, StandardSolutionFilePathProvider>()
+            //    .AddSingleton<ISolutionFileNameProvider, SingleSolutionFileNameProvider>()
+            //    .AddSingleton<IProjectBuildOutputBinariesDirectoryPathProvider, StandardProjectBinariesOutputDirectoryPathProvider>()
+            //    .AddSingleton<IEntryPointProjectNameProvider>(new DirectEntryPointProjectNameProvider(entryPointProjectName))
+            //    .AddSingleton<IVisualStudioStringlyTypedPathPartsOperator, DefaultVisualStudioStringlyTypedPathPartsOperator>()
+
+            //    .AddSingleton<IDeploymentDestinationFileSystemSiteProvider, SecretsFileRemoteDeploymentDestinationFileSystemSiteProvider>()
+            //    .AddSingleton<RemoteDeploymentSecretsSerialization>(serviceProviderInstance =>
+            //    {
+            //        var serializationProvider = serviceProviderInstance.GetRequiredService<IRemoteDeploymentSecretsSerializationProvider>();
+
+            //        var serialization = serializationProvider.GetRemoteDeploymentSecretsSerialization();
+            //        return serialization;
+            //    })
+            //    .AddSingleton<IRemoteDeploymentSecretsSerializationProvider, DefaultRemoteDeployementSecretsSerializationProvider>()
+            //    .AddSingleton<IDeploymentDestinationSecretsFileNameProvider>(new DirectDeploymentDestinationSecretsFileNameProvider(remoteDeploymentSecretsFileName))
+            //    .AddSingleton<ISecretsFilePathProvider, DefaultSecretsFilePathProvider>()
+            //    .AddSingleton<ISecretsDirectoryPathProvider, AlamaniaSecretsDirectoryPathProvider>()
+            //    .AddSingleton<IRivetOrganizationDirectoryPathProvider, BulgariaRivetOrganizationDirectoryPathProvider>()
+            //    .AddSingleton<IOrganizationDirectoryNameProvider, DefaultOrganizationDirectoryNameProvider>()
+            //    .AddSingleton<IOrganizationStringlyTypedPathOperator, DefaultOrganizationStringlyTypedPathOperator>()
+            //    .AddSingleton<IOrganizationsStringlyTypedPathOperator, DefaultOrganizationsStringlyTypedPathOperator>()
+            //    .AddSingleton<IDropboxDirectoryPathProvider, DefaultLocalDropboxDirectoryPathProvider>()
+            //    .AddSingleton<IUserProfileDirectoryPathProvider, DefaultLocalUserProfileDirectoryPathProvider>()
+            //    .AddSingleton<RemoteFileSystemOperator>()
+            //    .AddTransient<SftpClientWrapper>(serviceProviderInstance =>
+            //    {
+            //        var sftpClientWrapperProvider = serviceProviderInstance.GetRequiredService<ISftpClientWrapperProvider>();
+
+            //        var sftpClientWrapper = sftpClientWrapperProvider.GetSftpClientWrapper();
+            //        return sftpClientWrapper;
+            //    })
+            //    .AddSingleton<ISftpClientWrapperProvider, FrisiaSftpClientWrapperProvider>()
+            //    .AddSingleton<IAwsEc2ServerSecretsProvider, SuebiaAwsEc2ServerSecretsProvider>()
+            //    .AddSingleton<IAwsEc2ServerSecretsFileNameProvider, RemoteDeploymentSerializationAwsEc2ServerSecretsFileNameProvider>()
+            //    .AddSingleton<IAwsEc2ServerHostFriendlyNameProvider, RemoteDeploymentSerializationAwsEc2ServerHostFriendlyNameProvider>()
+
+            //    .UseDefaultFileSystemCloningOperator()
+
+            //    .AddSingleton<IJsonFileSerializationOperator, NewtonsoftJsonFileSerializationOperator>()
+            //    .AddSingleton<IStringlyTypedPathOperator, StringlyTypedPathOperator>()
+            //    .AddSingleton<LocalFileSystemOperator>() // For source.
+            //    .AddSingleton<RemoteFileSystemOperator>() // For destination.
+
+            //    .BuildServiceProvider()
+            //    ;
+
+            //Utilities.Deploy(serviceProvider);
+        }
+
+        /// <summary>
+        /// Deploys a solution to a local destination, assuming there is only one solution file in the solution directory so that the solution file name does not need to be specified.
+        /// </summary>
+        public static void DeployLocal(string localDeploymentSecretsFileName, string entryPointProjectName)
+        {
+            // NOTE! Has not been tested!
+
             // Build the DI container.
-            var serviceProvider = new ServiceCollection()
-                .AddSingleton<IDeploymentSourceFileSystemSiteProvider, DefaultDeploymentSourceFileSystemSiteProvider>()
-                .AddSingleton<IExecutableFilePathProvider, DefaultExecutableFilePathProvider>()
-                .AddSingleton<IExecutableFileDirectoryPathProvider, DefaultExecutableFileDirectoryPathProvider>()
-                .AddSingleton<ISolutionFilePathProvider, StandardSolutionFilePathProvider>()
-                .AddSingleton<ISolutionFileNameProvider, SingleSolutionFileNameProvider>()
-                .AddSingleton<IProjectBuildOutputBinariesDirectoryPathProvider, StandardProjectBinariesOutputDirectoryPathProvider>()
-                .AddSingleton<IEntryPointProjectNameProvider>(new DirectEntryPointProjectNameProvider(entryPointProjectName))
-                .AddSingleton<IVisualStudioStringlyTypedPathPartsOperator, DefaultVisualStudioStringlyTypedPathPartsOperator>()
+            var services = new ServiceCollection();
 
-                .AddSingleton<IDeploymentDestinationFileSystemSiteProvider, SecretsFileRemoteDeploymentDestinationFileSystemSiteProvider>()
-                .AddSingleton<RemoteDeploymentSecretsSerialization>(serviceProviderInstance =>
-                {
-                    var serializationProvider = serviceProviderInstance.GetRequiredService<IRemoteDeploymentSecretsSerializationProvider>();
-
-                    var serialization = serializationProvider.GetRemoteDeploymentSecretsSerialization();
-                    return serialization;
-                })
-                .AddSingleton<IRemoteDeploymentSecretsSerializationProvider, DefaultRemoteDeployementSecretsSerializationProvider>()
-                .AddSingleton<IDeploymentDestinationSecretsFileNameProvider>(new DirectDeploymentDestinationSecretsFileNameProvider(remoteDeploymentSecretsFileName))
-                .AddSingleton<ISecretsFilePathProvider, DefaultSecretsFilePathProvider>()
-                .AddSingleton<ISecretsDirectoryPathProvider, AlamaniaSecretsDirectoryPathProvider>()
-                .AddSingleton<IRivetOrganizationDirectoryPathProvider, BulgariaRivetOrganizationDirectoryPathProvider>()
-                .AddSingleton<IOrganizationDirectoryNameProvider, DefaultOrganizationDirectoryNameProvider>()
-                .AddSingleton<IOrganizationStringlyTypedPathOperator, DefaultOrganizationStringlyTypedPathOperator>()
-                .AddSingleton<IOrganizationsStringlyTypedPathOperator, DefaultOrganizationsStringlyTypedPathOperator>()
-                .AddSingleton<IDropboxDirectoryPathProvider, DefaultLocalDropboxDirectoryPathProvider>()
-                .AddSingleton<IUserProfileDirectoryPathProvider, DefaultLocalUserProfileDirectoryPathProvider>()
-                .AddSingleton<RemoteFileSystemOperator>()
-                .AddTransient<SftpClientWrapper>(serviceProviderInstance =>
-                {
-                    var sftpClientWrapperProvider = serviceProviderInstance.GetRequiredService<ISftpClientWrapperProvider>();
-
-                    var sftpClientWrapper = sftpClientWrapperProvider.GetSftpClientWrapper();
-                    return sftpClientWrapper;
-                })
-                .AddSingleton<ISftpClientWrapperProvider, FrisiaSftpClientWrapperProvider>()
-                .AddSingleton<IAwsEc2ServerSecretsProvider, SuebiaAwsEc2ServerSecretsProvider>()
-                .AddSingleton<IAwsEc2ServerSecretsFileNameProvider, RemoteDeploymentSerializationAwsEc2ServerSecretsFileNameProvider>()
-                .AddSingleton<IAwsEc2ServerHostFriendlyNameProvider, RemoteDeploymentSerializationAwsEc2ServerHostFriendlyNameProvider>()
-
-                .UseDefaultFileSystemCloningOperator()
-
-                .AddSingleton<IJsonFileSerializationOperator, NewtonsoftJsonFileSerializationOperator>()
-                .AddSingleton<IStringlyTypedPathOperator, StringlyTypedPathOperator>()
-                .AddSingleton<LocalFileSystemOperator>() // For source.
-                .AddSingleton<RemoteFileSystemOperator>() // For destination.
-
-                .BuildServiceProvider()
+            services
+                .AddDeploymentSourceFileSystemSiteProvider(
+                    services.AddSingleSolutionFileNameProviderAction(),
+                    services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName))
+                .AddLocalDeploymentDestinationFileSystemSiteProvider(
+                    services.AddDirectDeploymentDestinationSecretsFileNameProviderAction(localDeploymentSecretsFileName))
+                .AddFileSystemCloningOperator()
                 ;
+
+            var serviceProvider = services.BuildServiceProvider();
 
             Utilities.Deploy(serviceProvider);
         }
 
-        public static void DeployLocal(string localDeploymentSecretsFileName, string entryPointProjectName)
+        /// <summary>
+        /// Deploys a solution to a local destination, allowing specification of the solution file name (which is useful in the case when there is more than one solution file in the solution directory).
+        /// </summary>
+        public static void DeployLocal(string localDeploymentSecretsFileName, string solutionFileName, string entryPointProjectName)
         {
             // Build the DI container.
-            var serviceProvider = new ServiceCollection()
-                .AddSingleton<IDeploymentSourceFileSystemSiteProvider, DefaultDeploymentSourceFileSystemSiteProvider>()
-                .AddSingleton<IExecutableFilePathProvider, DefaultExecutableFilePathProvider>()
-                .AddSingleton<IExecutableFileDirectoryPathProvider, DefaultExecutableFileDirectoryPathProvider>()
-                .AddSingleton<ISolutionFilePathProvider, StandardSolutionFilePathProvider>()
-                .AddSingleton<ISolutionFileNameProvider, SingleSolutionFileNameProvider>()
-                .AddSingleton<IProjectBuildOutputBinariesDirectoryPathProvider, StandardProjectBinariesOutputDirectoryPathProvider>()
-                .AddSingleton<IEntryPointProjectNameProvider>(new DirectEntryPointProjectNameProvider(entryPointProjectName))
-                .AddSingleton<IVisualStudioStringlyTypedPathPartsOperator, DefaultVisualStudioStringlyTypedPathPartsOperator>()
+            var services = new ServiceCollection();
 
-                .AddSingleton<IDeploymentDestinationFileSystemSiteProvider, SecretsFileLocalDeploymentDestinationFileSystemSiteProvider>()
-                .AddSingleton<IDeploymentDestinationSecretsFileNameProvider>(new DirectDeploymentDestinationSecretsFileNameProvider(localDeploymentSecretsFileName))
-                .AddSingleton<IUserProfileDirectoryPathProvider, DefaultLocalUserProfileDirectoryPathProvider>()
-                .AddSingleton<IDropboxDirectoryPathProvider, DefaultLocalDropboxDirectoryPathProvider>()
-                .AddSingleton<IRivetOrganizationDirectoryPathProvider, BulgariaRivetOrganizationDirectoryPathProvider>()
-                .AddSingleton<ISecretsDirectoryPathProvider, AlamaniaSecretsDirectoryPathProvider>()
-                .AddSingleton<ISecretsFilePathProvider, DefaultSecretsFilePathProvider>()
-                .AddSingleton<IOrganizationDirectoryNameProvider, DefaultOrganizationDirectoryNameProvider>()
-                .AddSingleton<IOrganizationStringlyTypedPathOperator, DefaultOrganizationStringlyTypedPathOperator>()
-                .AddSingleton<IOrganizationsStringlyTypedPathOperator, DefaultOrganizationsStringlyTypedPathOperator>()
-
-                .UseDefaultFileSystemCloningOperator()
-
-                .AddSingleton<IJsonFileSerializationOperator, NewtonsoftJsonFileSerializationOperator>()
-                .AddSingleton<IStringlyTypedPathOperator, StringlyTypedPathOperator>()
-                .AddSingleton<LocalFileSystemOperator>() // For source AND destination.
-
-                .BuildServiceProvider()
+            services
+                .AddDeploymentSourceFileSystemSiteProvider(
+                    services.AddDirectSolutionFileNameProviderAction(solutionFileName),
+                    services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName))
+                .AddLocalDeploymentDestinationFileSystemSiteProvider(
+                    services.AddDirectDeploymentDestinationSecretsFileNameProviderAction(localDeploymentSecretsFileName))
+                .AddFileSystemCloningOperator()
                 ;
+
+            var serviceProvider = services.BuildServiceProvider();
 
             Utilities.Deploy(serviceProvider);
         }

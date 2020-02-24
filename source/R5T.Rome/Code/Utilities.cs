@@ -270,10 +270,10 @@ namespace R5T.Rome
 
         private static void Deploy(IServiceProvider serviceProvider)
         {
-            var sourceSiteProvider = serviceProvider.GetRequiredService<IDeploymentSourceFileSystemSiteProvider>();
+            var sourceSiteProvider = serviceProvider.GetRequiredService<IDeploymentSource_FileSystemSiteProvider>();
             var sourceSite = sourceSiteProvider.GetDeploymentSourceFileSystemSite();
 
-            var destinationSiteProvider = serviceProvider.GetRequiredService<IDeploymentDestinationFileSystemSiteProvider>();
+            var destinationSiteProvider = serviceProvider.GetRequiredService<IDeploymentDestination_FileSystemSiteProvider>();
             var destinationSite = destinationSiteProvider.GetDeploymentDestinationFileSystemSite();
 
             var cloningOperator = serviceProvider.GetRequiredService<IFileSystemCloningOperator>();

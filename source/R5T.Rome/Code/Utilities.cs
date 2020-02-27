@@ -26,9 +26,11 @@ using R5T.Gepidia.Remote;
 using R5T.Jutland;
 using R5T.Jutland.Newtonsoft;
 using R5T.Lombardy;
+using R5T.Lombardy.Standard;
 using R5T.Macommania;
 using R5T.Macommania.Default;
 using R5T.Macommania.Standard;
+using R5T.Magyar;
 using R5T.Norsica.Standard;
 using R5T.Pictia;
 using R5T.Pictia.Frisia;
@@ -92,7 +94,67 @@ namespace R5T.Rome
             throw new NotImplementedException();
         }
 
-        public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName,
+        public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName, string remoteServiceName,
+            ServiceAction<ISolutionFileNameProvider> addSolutionFileNameProvider,
+            ServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
+            ServiceAction<IFinalizeDeployAction> addFinalizeDeployAction)
+        {
+            var buildConfigurationName = "Debug";
+
+            // Build the DI-container for configuring the configuration.
+            var services = new ServiceCollection()
+                .AddSecretsDirectoryFilePathProvider()
+                ;
+
+            var configurationServiceProvider = services.BuildServiceProvider();
+
+            // Build the configuration.
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddDotnetConfiguration(configurationServiceProvider)
+                ;
+
+            var configuration = configurationBuilder.Build();
+
+            // Build the DI-container.
+            services
+                .AddConfiguration(configuration)
+                .AddBasicLogging()
+
+                .AddStandardDeployAction(
+                    EnumerableHelper.From(services.AddPublishPreFileCopyDeployActionAction(
+                        services.AddPublishActionAction(
+                            services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName),
+                            services.AddDirectBuildConfigurationNameProviderAction(buildConfigurationName)))),
+                    services.AddStandardFileCopyDeployActionAction(
+                        services.AddPublishDeploymentSourceFileSystemSiteProviderAction(
+                            services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName),
+                            services.AddDirectBuildConfigurationNameProviderAction(buildConfigurationName)),
+                        services.AddRemoteDeploymentDestinationFileSystemSiteProviderAction(
+                            services.AddDirectDeploymentDestinationSecretsFileNameProviderAction(remoteDeploymentSecretsFileName)),
+                        services.AddFileSystemCloningOperatorAction()),
+                    EnumerableHelper.From(services.AddCopySecretsFilesActionAction(
+                        addSecretsFileNamesProvider,
+                        services.AddDefaultDeploymentSource_SecretsDirectory_FileSystemSiteProviderAction(
+                            ServiceAction.AlreadyAdded,
+                            ServiceAction.AlreadyAdded),
+                        services.AddDefaultRemoteDeploymentDestination_SecretsDirectory_FileSystemSiteProviderAction(
+                            ServiceAction.AlreadyAdded,
+                            ServiceAction.AlreadyAdded),
+                        services.AddStringlyTypedPathOperatorAction())),
+                    addFinalizeDeployAction,
+                    EnumerableHelper.From(services.AddVerifyWebsiteStartedActionAction(
+                        ServiceAction.AlreadyAdded,
+                        services.AddDirectRemoteServiceNameProviderAction(remoteServiceName))))
+                ;
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var deployAction = serviceProvider.GetRequiredService<IDeployAction>();
+
+            deployAction.Run();
+        }
+
+        public static void DeployRemoteWebsite_Old(string remoteDeploymentSecretsFileName, string entryPointProjectName,
             ServiceAction<ISolutionFileNameProvider> addSolutionFileNameProvider)
         {
             var buildConfigurationName = "Debug";
@@ -146,20 +208,32 @@ namespace R5T.Rome
         /// <summary>
         /// Can use if only a single solution file exists in the solution directory.
         /// </summary>
-        public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName)
+        public static void DeployRemoteWebsite_Old(string remoteDeploymentSecretsFileName, string entryPointProjectName)
         {
             void addSolutionFileName(IServiceCollection services) => services.AddSingleSolutionFileNameProvider();
 
-            Utilities.DeployRemoteWebsite(remoteDeploymentSecretsFileName, entryPointProjectName,
+            Utilities.DeployRemoteWebsite_Old(remoteDeploymentSecretsFileName, entryPointProjectName,
                new ServiceAction<ISolutionFileNameProvider>(addSolutionFileName));
         }
 
-        public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName, string solutionFileName)
+        public static void DeployRemoteWebsite_Old(string remoteDeploymentSecretsFileName, string entryPointProjectName, string solutionFileName)
         {
             void addSolutionFileName(IServiceCollection services) => services.AddDirectSolutionFileNameProvider(solutionFileName);
 
-            Utilities.DeployRemoteWebsite(remoteDeploymentSecretsFileName, entryPointProjectName,
+            Utilities.DeployRemoteWebsite_Old(remoteDeploymentSecretsFileName, entryPointProjectName,
                 new ServiceAction<ISolutionFileNameProvider>(addSolutionFileName));
+        }
+
+        public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName, string solutionFileName, string remoteServiceName,
+            ServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
+            ServiceAction<IFinalizeDeployAction> addFinalizeDeployAction)
+        {
+            void addSolutionFileName(IServiceCollection services) => services.AddDirectSolutionFileNameProvider(solutionFileName);
+
+            Utilities.DeployRemoteWebsite(remoteDeploymentSecretsFileName, entryPointProjectName, remoteServiceName,
+                new ServiceAction<ISolutionFileNameProvider>(addSolutionFileName),
+                addSecretsFileNamesProvider,
+                addFinalizeDeployAction);
         }
 
         /// <summary>

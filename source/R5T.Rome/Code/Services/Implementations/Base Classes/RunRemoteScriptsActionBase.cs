@@ -6,7 +6,7 @@ using R5T.Pictia.Extensions;
 
 namespace R5T.Rome
 {
-    public abstract class RunRemoteScriptsActionBase : IPostFileCopyDeployAction
+    public abstract class RunRemoteScriptsActionBase
     {
         private ISftpClientWrapperProvider SftpClientWrapperProvider { get; }
 

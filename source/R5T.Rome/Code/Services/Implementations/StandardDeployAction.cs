@@ -9,16 +9,21 @@ namespace R5T.Rome
         private IEnumerable<IPreFileCopyDeployAction> PreFileCopyDeployActions { get; }
         private IFileCopyDeployAction FileCopyDeployAction { get; }
         private IEnumerable<IPostFileCopyDeployAction> PostFileCopyDeployActions { get; }
-
+        private IFinalizeDeployAction FinalizeDeployAction { get; }
+        private IEnumerable<IPostFinalizeDeployAction> PostFinalizeDeployActions { get; }
 
         public StandardDeployAction(
             IEnumerable<IPreFileCopyDeployAction> preFileCopyDeployActions,
             IFileCopyDeployAction fileCopyDeployAction,
-            IEnumerable<IPostFileCopyDeployAction> postFileCopyDeployActions)
+            IEnumerable<IPostFileCopyDeployAction> postFileCopyDeployActions,
+            IFinalizeDeployAction finalizeDeployAction,
+            IEnumerable<IPostFinalizeDeployAction> postFinalizeDeployActions)
         {
             this.PreFileCopyDeployActions = preFileCopyDeployActions;
             this.FileCopyDeployAction = fileCopyDeployAction;
             this.PostFileCopyDeployActions = postFileCopyDeployActions;
+            this.FinalizeDeployAction = finalizeDeployAction;
+            this.PostFinalizeDeployActions = postFinalizeDeployActions;
         }
 
         public void Run()
@@ -33,6 +38,13 @@ namespace R5T.Rome
             foreach (var postFileCopyDeployAction in this.PostFileCopyDeployActions)
             {
                 postFileCopyDeployAction.Run();
+            }
+
+            this.FinalizeDeployAction.Run();
+
+            foreach (var postFinalizeDeployAction in this.PostFinalizeDeployActions)
+            {
+                postFinalizeDeployAction.Run();
             }
         }
     }

@@ -42,6 +42,8 @@ namespace R5T.Rome
                 var destinationFilePath = this.StringlyTypedPathOperator.Combine(destinationDirectoryFileSystemSite.DirectoryPath, secretsFileName);
 
                 var copyFileOperation = new CopyFileOperation(sourceFilePath, destinationFilePath);
+
+                operations.Add(copyFileOperation);
             }
 
             foreach (var operation in operations)

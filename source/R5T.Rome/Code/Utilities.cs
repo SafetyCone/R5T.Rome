@@ -95,9 +95,9 @@ namespace R5T.Rome
         }
 
         public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName, string remoteServiceName,
-            ServiceAction<ISolutionFileNameProvider> addSolutionFileNameProvider,
-            ServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
-            ServiceAction<IFinalizeDeployAction> addFinalizeDeployAction)
+            IServiceAction<ISolutionFileNameProvider> addSolutionFileNameProvider,
+            IServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
+            IServiceAction<IFinalizeDeployAction> addFinalizeDeployAction)
         {
             var buildConfigurationName = "Debug";
 
@@ -135,15 +135,15 @@ namespace R5T.Rome
                     EnumerableHelper.From(services.AddCopySecretsFilesActionAction(
                         addSecretsFileNamesProvider,
                         services.AddDefaultDeploymentSource_SecretsDirectory_FileSystemSiteProviderAction(
-                            ServiceAction.AlreadyAdded,
-                            ServiceAction.AlreadyAdded),
+                            ServiceAction<ILocalFileSystemOperator>.AlreadyAdded,
+                            ServiceAction<ISecretsDirectoryPathProvider>.AlreadyAdded),
                         services.AddDefaultRemoteDeploymentDestination_SecretsDirectory_FileSystemSiteProviderAction(
-                            ServiceAction.AlreadyAdded,
-                            ServiceAction.AlreadyAdded),
+                            ServiceAction<IRemoteFileSystemOperator>.AlreadyAdded,
+                            ServiceAction<IRemoteDeploymentSecretsSerializationProvider>.AlreadyAdded),
                         services.AddStringlyTypedPathOperatorAction())),
                     addFinalizeDeployAction,
                     EnumerableHelper.From(services.AddVerifyWebsiteStartedActionAction(
-                        ServiceAction.AlreadyAdded,
+                        ServiceAction<ISftpClientWrapperProvider>.AlreadyAdded,
                         services.AddDirectRemoteServiceNameProviderAction(remoteServiceName))))
                 ;
 
@@ -225,8 +225,8 @@ namespace R5T.Rome
         }
 
         public static void DeployRemoteWebsite(string remoteDeploymentSecretsFileName, string entryPointProjectName, string solutionFileName, string remoteServiceName,
-            ServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
-            ServiceAction<IFinalizeDeployAction> addFinalizeDeployAction)
+            IServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
+            IServiceAction<IFinalizeDeployAction> addFinalizeDeployAction)
         {
             void addSolutionFileName(IServiceCollection services) => services.AddDirectSolutionFileNameProvider(solutionFileName);
 

@@ -35,7 +35,7 @@ namespace R5T.Rome
         /// <summary>
         /// Adds the <see cref="DirectRemoteServiceNameProvider"/> implementation of <see cref="IRemoteServiceNameProvider"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
-        public static ServiceAction<IRemoteServiceNameProvider> AddDirectRemoteServiceNameProviderAction(this IServiceCollection services, string remoteServiceName)
+        public static IServiceAction<IRemoteServiceNameProvider> AddDirectRemoteServiceNameProviderAction(this IServiceCollection services, string remoteServiceName)
         {
             var serviceAction = new ServiceAction<IRemoteServiceNameProvider>(() => services.AddDirectRemoteServiceNameProvider(remoteServiceName));
             return serviceAction;
@@ -45,8 +45,8 @@ namespace R5T.Rome
         /// Adds the <see cref="VerifyWebsiteStartedAction"/> implementation of <see cref="IPostFinalizeDeployAction"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
         public static IServiceCollection AddVerifyWebsiteStartedAction(this IServiceCollection services,
-            ServiceAction<ISftpClientWrapperProvider> addSftpClientWrapperProvider,
-            ServiceAction<IRemoteServiceNameProvider> addRemoteServiceNameProvider)
+            IServiceAction<ISftpClientWrapperProvider> addSftpClientWrapperProvider,
+            IServiceAction<IRemoteServiceNameProvider> addRemoteServiceNameProvider)
         {
             services
                 .AddSingleton<IPostFinalizeDeployAction, VerifyWebsiteStartedAction>()
@@ -60,9 +60,9 @@ namespace R5T.Rome
         /// <summary>
         /// Adds the <see cref="VerifyWebsiteStartedAction"/> implementation of <see cref="IPostFinalizeDeployAction"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
-        public static ServiceAction<IPostFinalizeDeployAction> AddVerifyWebsiteStartedActionAction(this IServiceCollection services,
-            ServiceAction<ISftpClientWrapperProvider> addSftpClientWrapperProvider,
-            ServiceAction<IRemoteServiceNameProvider> addRemoteServiceNameProvider)
+        public static IServiceAction<IPostFinalizeDeployAction> AddVerifyWebsiteStartedActionAction(this IServiceCollection services,
+            IServiceAction<ISftpClientWrapperProvider> addSftpClientWrapperProvider,
+            IServiceAction<IRemoteServiceNameProvider> addRemoteServiceNameProvider)
         {
             var serviceAction = new ServiceAction<IPostFinalizeDeployAction>(() => services.AddVerifyWebsiteStartedAction(
                 addSftpClientWrapperProvider,
@@ -74,10 +74,10 @@ namespace R5T.Rome
         /// Adds the <see cref="CopySecretsFilesAction"/> implementation of <see cref="IPostFileCopyDeployAction"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
         public static IServiceCollection AddCopySecretsFilesAction(this IServiceCollection services,
-            ServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
-            ServiceAction<IDeploymentSource_SecretsDirectory_FileSystemSiteProvider> addDeploymentSource_SecretsDirectory_FileSystemSiteProvider,
-            ServiceAction<IDeploymentDestination_SecretsDirectory_FileSystemSiteProvider> addDeploymentDestination_SecretsDirectory_FileSystemSiteProvider,
-            ServiceAction<IStringlyTypedPathOperator> addStringlyTypedPathOperator)
+            IServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
+            IServiceAction<IDeploymentSource_SecretsDirectory_FileSystemSiteProvider> addDeploymentSource_SecretsDirectory_FileSystemSiteProvider,
+            IServiceAction<IDeploymentDestination_SecretsDirectory_FileSystemSiteProvider> addDeploymentDestination_SecretsDirectory_FileSystemSiteProvider,
+            IServiceAction<IStringlyTypedPathOperator> addStringlyTypedPathOperator)
         {
             services
                 .AddSingleton<IPostFileCopyDeployAction, CopySecretsFilesAction>()
@@ -93,11 +93,11 @@ namespace R5T.Rome
         /// <summary>
         /// Adds the <see cref="CopySecretsFilesAction"/> implementation of <see cref="IPostFileCopyDeployAction"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
-        public static ServiceAction<IPostFileCopyDeployAction> AddCopySecretsFilesActionAction(this IServiceCollection services,
-            ServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
-            ServiceAction<IDeploymentSource_SecretsDirectory_FileSystemSiteProvider> addDeploymentSource_SecretsDirectory_FileSystemSiteProvider,
-            ServiceAction<IDeploymentDestination_SecretsDirectory_FileSystemSiteProvider> addDeploymentDestination_SecretsDirectory_FileSystemSiteProvider,
-            ServiceAction<IStringlyTypedPathOperator> addStringlyTypedPathOperator)
+        public static IServiceAction<IPostFileCopyDeployAction> AddCopySecretsFilesActionAction(this IServiceCollection services,
+            IServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
+            IServiceAction<IDeploymentSource_SecretsDirectory_FileSystemSiteProvider> addDeploymentSource_SecretsDirectory_FileSystemSiteProvider,
+            IServiceAction<IDeploymentDestination_SecretsDirectory_FileSystemSiteProvider> addDeploymentDestination_SecretsDirectory_FileSystemSiteProvider,
+            IServiceAction<IStringlyTypedPathOperator> addStringlyTypedPathOperator)
         {
             var serviceAction = new ServiceAction<IPostFileCopyDeployAction>(() => services.AddCopySecretsFilesAction(
                 addSecretsFileNamesProvider,
@@ -111,9 +111,9 @@ namespace R5T.Rome
         /// Adds the <see cref="CopySecretsFilesAction"/> implementation of the <see cref="IPostFileCopyDeployAction"/> service.
         /// </summary>
         public static IServiceCollection AddRemoteCopySecretsFilesAction(this IServiceCollection services,
-            ServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
-            ServiceAction<IAwsEc2ServerHostFriendlyNameProvider> addAwsEc2ServerHostFriendlyNameProvider,
-            ServiceAction<IDeploymentDestinationSecretsFileNameProvider> addDeploymentDestinationSecretsFileNameProvider)
+            IServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
+            IServiceAction<IAwsEc2ServerHostFriendlyNameProvider> addAwsEc2ServerHostFriendlyNameProvider,
+            IServiceAction<IDeploymentDestinationSecretsFileNameProvider> addDeploymentDestinationSecretsFileNameProvider)
         {
             services.AddCopySecretsFilesAction(
                 addSecretsFileNamesProvider,
@@ -129,10 +129,10 @@ namespace R5T.Rome
         /// <summary>
         /// Adds the <see cref="CopySecretsFilesAction"/> implementation of the <see cref="IPostFileCopyDeployAction"/> service.
         /// </summary>
-        public static ServiceAction<IPostFileCopyDeployAction> AddRemoteCopySecretsFilesActionAction(this IServiceCollection services,
-            ServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
-            ServiceAction<IAwsEc2ServerHostFriendlyNameProvider> addAwsEc2ServerHostFriendlyNameProvider,
-            ServiceAction<IDeploymentDestinationSecretsFileNameProvider> addDeploymentDestinationSecretsFileNameProvider)
+        public static IServiceAction<IPostFileCopyDeployAction> AddRemoteCopySecretsFilesActionAction(this IServiceCollection services,
+            IServiceAction<ISecretsFileNamesProvider> addSecretsFileNamesProvider,
+            IServiceAction<IAwsEc2ServerHostFriendlyNameProvider> addAwsEc2ServerHostFriendlyNameProvider,
+            IServiceAction<IDeploymentDestinationSecretsFileNameProvider> addDeploymentDestinationSecretsFileNameProvider)
         {
             var serviceAction = new ServiceAction<IPostFileCopyDeployAction>(() => services.AddRemoteCopySecretsFilesAction(
                 addSecretsFileNamesProvider,
@@ -145,11 +145,11 @@ namespace R5T.Rome
         /// Adds the <see cref="StandardDeployAction"/> implementation of <see cref="IDeployAction"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
         public static IServiceCollection AddStandardDeployAction(this IServiceCollection services,
-            IEnumerable<ServiceAction<IPreFileCopyDeployAction>> addPreFileCopyDeployActions,
-            ServiceAction<IFileCopyDeployAction> addFileCopyDeployAction,
-            IEnumerable<ServiceAction<IPostFileCopyDeployAction>> addPostFileCopyDeployActions,
-            ServiceAction<IFinalizeDeployAction> addFinalizeDeployAction,
-            IEnumerable<ServiceAction<IPostFinalizeDeployAction>> addPostFinalizeDeployActions)
+            IEnumerable<IServiceAction<IPreFileCopyDeployAction>> addPreFileCopyDeployActions,
+            IServiceAction<IFileCopyDeployAction> addFileCopyDeployAction,
+            IEnumerable<IServiceAction<IPostFileCopyDeployAction>> addPostFileCopyDeployActions,
+            IServiceAction<IFinalizeDeployAction> addFinalizeDeployAction,
+            IEnumerable<IServiceAction<IPostFinalizeDeployAction>> addPostFinalizeDeployActions)
         {
             services
                 .AddSingleton<IDeployAction, StandardDeployAction>()
@@ -166,12 +166,12 @@ namespace R5T.Rome
         /// <summary>
         /// Adds the <see cref="StandardDeployAction"/> implementation of <see cref="IDeployAction"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
-        public static ServiceAction<IDeployAction> AddStandardDeployActionAction(this IServiceCollection services,
-            IEnumerable<ServiceAction<IPreFileCopyDeployAction>> addPreFileCopyDeployActions,
-            ServiceAction<IFileCopyDeployAction> addFileCopyDeployAction,
-            IEnumerable<ServiceAction<IPostFileCopyDeployAction>> addPostFileCopyDeployActions,
-            ServiceAction<IFinalizeDeployAction> addFinalizeDeployAction,
-            IEnumerable<ServiceAction<IPostFinalizeDeployAction>> addPostFinalizeDeployActions)
+        public static IServiceAction<IDeployAction> AddStandardDeployActionAction(this IServiceCollection services,
+            IEnumerable<IServiceAction<IPreFileCopyDeployAction>> addPreFileCopyDeployActions,
+            IServiceAction<IFileCopyDeployAction> addFileCopyDeployAction,
+            IEnumerable<IServiceAction<IPostFileCopyDeployAction>> addPostFileCopyDeployActions,
+            IServiceAction<IFinalizeDeployAction> addFinalizeDeployAction,
+            IEnumerable<IServiceAction<IPostFinalizeDeployAction>> addPostFinalizeDeployActions)
         {
             var serviceAction = new ServiceAction<IDeployAction>(() => services.AddStandardDeployAction(
                 addPreFileCopyDeployActions,
@@ -186,9 +186,9 @@ namespace R5T.Rome
         /// Adds the <see cref="StandardFileCopyDeployAction"/>  implementation of <see cref="IFileCopyDeployAction"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
         public static IServiceCollection AddStandardFileCopyDeployAction(this IServiceCollection services,
-            ServiceAction<IDeploymentSource_FileSystemSiteProvider> addDeploymentSource_FileSystemSiteProvider,
-            ServiceAction<IDeploymentDestination_FileSystemSiteProvider> addDeploymentDestination_FileSystemSiteProvider,
-            ServiceAction<IFileSystemCloningOperator> addFileSystemCloningOperator)
+            IServiceAction<IDeploymentSource_FileSystemSiteProvider> addDeploymentSource_FileSystemSiteProvider,
+            IServiceAction<IDeploymentDestination_FileSystemSiteProvider> addDeploymentDestination_FileSystemSiteProvider,
+            IServiceAction<IFileSystemCloningOperator> addFileSystemCloningOperator)
         {
             services
                 .AddSingleton<IFileCopyDeployAction, StandardFileCopyDeployAction>()
@@ -203,10 +203,10 @@ namespace R5T.Rome
         /// <summary>
         /// Adds the <see cref="StandardFileCopyDeployAction"/>  implementation of <see cref="IFileCopyDeployAction"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
-        public static ServiceAction<IFileCopyDeployAction> AddStandardFileCopyDeployActionAction(this IServiceCollection services,
-            ServiceAction<IDeploymentSource_FileSystemSiteProvider> addDeploymentSource_FileSystemSiteProvider,
-            ServiceAction<IDeploymentDestination_FileSystemSiteProvider> addDeploymentDestination_FileSystemSiteProvider,
-            ServiceAction<IFileSystemCloningOperator> addFileSystemCloningOperator)
+        public static IServiceAction<IFileCopyDeployAction> AddStandardFileCopyDeployActionAction(this IServiceCollection services,
+            IServiceAction<IDeploymentSource_FileSystemSiteProvider> addDeploymentSource_FileSystemSiteProvider,
+            IServiceAction<IDeploymentDestination_FileSystemSiteProvider> addDeploymentDestination_FileSystemSiteProvider,
+            IServiceAction<IFileSystemCloningOperator> addFileSystemCloningOperator)
         {
             var serviceAction = new ServiceAction<IFileCopyDeployAction>(() => services.AddStandardFileCopyDeployAction(
                 addDeploymentSource_FileSystemSiteProvider,
@@ -219,7 +219,7 @@ namespace R5T.Rome
         /// Adds the <see cref="PublishPreFileCopyDeployAction"/> implementation of <see cref="IPreFileCopyDeployAction"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
         public static IServiceCollection AddPublishPreFileCopyDeployAction(this IServiceCollection services,
-            ServiceAction<IPublishAction> addPublishAction)
+            IServiceAction<IPublishAction> addPublishAction)
         {
             services
                 .AddSingleton<IPreFileCopyDeployAction, PublishPreFileCopyDeployAction>()
@@ -232,8 +232,8 @@ namespace R5T.Rome
         /// <summary>
         /// Adds the <see cref="PublishPreFileCopyDeployAction"/> implementation of <see cref="IPreFileCopyDeployAction"/> as a <see cref="ServiceLifetime.Singleton"/>.
         /// </summary>
-        public static ServiceAction<IPreFileCopyDeployAction> AddPublishPreFileCopyDeployActionAction(this IServiceCollection services,
-            ServiceAction<IPublishAction> addPublishAction)
+        public static IServiceAction<IPreFileCopyDeployAction> AddPublishPreFileCopyDeployActionAction(this IServiceCollection services,
+            IServiceAction<IPublishAction> addPublishAction)
         {
             var serviceAction = new ServiceAction<IPreFileCopyDeployAction>(() => services.AddPublishPreFileCopyDeployAction(
                 addPublishAction));

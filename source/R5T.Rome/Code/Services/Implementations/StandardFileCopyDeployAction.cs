@@ -3,10 +3,13 @@
 using R5T.Antium;
 using R5T.Teutonia;
 
+using R5T.T0064;
+
 
 namespace R5T.Rome
 {
-    public class StandardFileCopyDeployAction : IFileCopyDeployAction
+    [ServiceImplementationMarker]
+    public class StandardFileCopyDeployAction : IFileCopyDeployAction, IServiceImplementation
     {
         private IDeploymentSource_FileSystemSiteProvider DeploymentSource_FileSystemSiteProvider { get; }
         private IDeploymentDestination_FileSystemSiteProvider DeploymentDestination_FileSystemSiteProvider { get; }

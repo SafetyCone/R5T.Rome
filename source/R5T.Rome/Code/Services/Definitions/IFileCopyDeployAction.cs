@@ -2,10 +2,13 @@
 
 using R5T.Magyar;
 
+using R5T.T0064;
+
 
 namespace R5T.Rome
 {
-    public interface IFileCopyDeployAction : IAction
+    [ServiceDefinitionMarker]
+    public interface IFileCopyDeployAction : IAction, IServiceDefinition
     {
     }
 }

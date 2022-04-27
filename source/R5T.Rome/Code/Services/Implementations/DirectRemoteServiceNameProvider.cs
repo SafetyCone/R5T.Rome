@@ -1,14 +1,18 @@
 ﻿using System;
 
+using R5T.T0064;
+
 
 namespace R5T.Rome
 {
-    public class DirectRemoteServiceNameProvider : IRemoteServiceNameProvider
+    [ServiceImplementationMarker]
+    public class DirectRemoteServiceNameProvider : IRemoteServiceNameProvider, IServiceImplementation
     {
         private string RemoteServiceName { get; }
 
 
-        public DirectRemoteServiceNameProvider(string remoteServiceName)
+        public DirectRemoteServiceNameProvider(
+            [NotServiceComponent] string remoteServiceName)
         {
             this.RemoteServiceName = remoteServiceName;
         }

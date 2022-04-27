@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5T.Rome", "R5T.Rome\R5T.Ro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5T.Rome.Testing", "R5T.Rome.Testing\R5T.Rome.Testing.csproj", "{F7660259-9715-43EB-AC04-C9B17826BEC0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Dependencies", "_Dependencies", "{C9C154D6-B79F-4D88-B180-16357B050975}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R5T.T0064", "..\..\R5T.T0064\source\R5T.T0064\R5T.T0064.csproj", "{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +62,20 @@ Global
 		{F7660259-9715-43EB-AC04-C9B17826BEC0}.Release|x64.Build.0 = Release|Any CPU
 		{F7660259-9715-43EB-AC04-C9B17826BEC0}.Release|x86.ActiveCfg = Release|Any CPU
 		{F7660259-9715-43EB-AC04-C9B17826BEC0}.Release|x86.Build.0 = Release|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Debug|x64.Build.0 = Debug|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Debug|x86.Build.0 = Debug|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Release|x64.ActiveCfg = Release|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Release|x64.Build.0 = Release|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Release|x86.ActiveCfg = Release|Any CPU
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D0AE23E7-3260-4DE3-8DAA-47D1FBB60BE9} = {C9C154D6-B79F-4D88-B180-16357B050975}
 	EndGlobalSection
 EndGlobal

@@ -5,10 +5,13 @@ using R5T.Antium;
 using R5T.Lombardy;
 using R5T.Teutonia;
 
+using R5T.T0064;
+
 
 namespace R5T.Rome
 {
-    public class CopySecretsFilesAction : IPostFileCopyDeployAction
+    [ServiceImplementationMarker]
+    public class CopySecretsFilesAction : IPostFileCopyDeployAction, IServiceImplementation
     {
         private ISecretsFileNamesProvider SecretsFileNamesProvider { get; }
         private IDeploymentSource_SecretsDirectory_FileSystemSiteProvider DeploymentSource_SecretsDirectory_FileSystemSiteProvider { get; }

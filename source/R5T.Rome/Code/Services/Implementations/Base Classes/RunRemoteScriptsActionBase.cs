@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 
 using R5T.Pictia;
-using R5T.Pictia.Extensions;
+using R5T.Pictia.Extensions;using R5T.T0064;
 
 
 namespace R5T.Rome
-{
-    public abstract class RunRemoteScriptsActionBase
+{[ServiceImplementationMarker]
+    public abstract class RunRemoteScriptsActionBase:IServiceImplementation
     {
         private ISftpClientWrapperProvider SftpClientWrapperProvider { get; }
 

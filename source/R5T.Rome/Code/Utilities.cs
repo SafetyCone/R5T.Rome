@@ -130,14 +130,14 @@ namespace R5T.Rome
                             services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName),
                             services.AddDirectBuildConfigurationNameProviderAction(buildConfigurationName)),
                         services.AddRemoteDeploymentDestinationFileSystemSiteProviderAction(
-                            services.AddDirectDeploymentDestinationSecretsFileNameProviderAction(remoteDeploymentSecretsFileName)),
+                            services.AddDirectDeploymentDestinationSecretsFileNameProviderAction_Old(remoteDeploymentSecretsFileName)),
                         services.AddFileSystemCloningOperatorAction()),
                     EnumerableHelper.From(services.AddCopySecretsFilesActionAction(
                         addSecretsFileNamesProvider,
-                        services.AddDefaultDeploymentSource_SecretsDirectory_FileSystemSiteProviderAction(
+                        services.AddDefaultDeploymentSource_SecretsDirectory_FileSystemSiteProviderAction_Old(
                             ServiceAction<ILocalFileSystemOperator>.AlreadyAdded,
                             ServiceAction<ISecretsDirectoryPathProvider>.AlreadyAdded),
-                        services.AddDefaultRemoteDeploymentDestination_SecretsDirectory_FileSystemSiteProviderAction(
+                        services.AddDefaultRemoteDeploymentDestination_SecretsDirectory_FileSystemSiteProviderAction_Old(
                             ServiceAction<IRemoteFileSystemOperator>.AlreadyAdded,
                             ServiceAction<IRemoteDeploymentSecretsSerializationProvider>.AlreadyAdded),
                         services.AddStringlyTypedPathOperatorAction())),
@@ -189,7 +189,7 @@ namespace R5T.Rome
 
                 // Deployment destination file-system site.
                 .AddRemoteDeploymentDestinationFileSystemSiteProvider(
-                    services.AddDirectDeploymentDestinationSecretsFileNameProviderAction(remoteDeploymentSecretsFileName))
+                    services.AddDirectDeploymentDestinationSecretsFileNameProviderAction_Old(remoteDeploymentSecretsFileName))
 
                 .AddFileSystemCloningOperator()
                 ;
@@ -239,7 +239,9 @@ namespace R5T.Rome
         /// <summary>
         /// Deploys a solution to a remote destination, assuming there is only one solution file in the solution directory so that the solution file name does not need to be specified.
         /// </summary>
+#pragma warning disable IDE0060 // Remove unused parameter
         public static void DeployRemote(string remoteDeploymentSecretsFileName, string entryPointProjectName)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             //// Build the DI container.
             //var serviceProvider = new ServiceCollection()
@@ -311,7 +313,7 @@ namespace R5T.Rome
                     services.AddSingleSolutionFileNameProviderAction(),
                     services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName))
                 .AddLocalDeploymentDestinationFileSystemSiteProvider(
-                    services.AddDirectDeploymentDestinationSecretsFileNameProviderAction(localDeploymentSecretsFileName))
+                    services.AddDirectDeploymentDestinationSecretsFileNameProviderAction_Old(localDeploymentSecretsFileName))
                 .AddFileSystemCloningOperator()
                 ;
 
@@ -333,7 +335,7 @@ namespace R5T.Rome
                     services.AddDirectSolutionFileNameProviderAction(solutionFileName),
                     services.AddDirectEntryPointProjectNameProviderAction(entryPointProjectName))
                 .AddLocalDeploymentDestinationFileSystemSiteProvider(
-                    services.AddDirectDeploymentDestinationSecretsFileNameProviderAction(localDeploymentSecretsFileName))
+                    services.AddDirectDeploymentDestinationSecretsFileNameProviderAction_Old(localDeploymentSecretsFileName))
                 .AddFileSystemCloningOperator()
                 ;
 

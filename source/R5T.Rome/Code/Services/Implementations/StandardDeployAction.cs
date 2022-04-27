@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using R5T.T0064;
+
 
 namespace R5T.Rome
 {
-    public class StandardDeployAction : IDeployAction
+    [ServiceImplementationMarker]
+    public class StandardDeployAction : IDeployAction, IServiceImplementation
     {
         private IEnumerable<IPreFileCopyDeployAction> PreFileCopyDeployActions { get; }
         private IFileCopyDeployAction FileCopyDeployAction { get; }

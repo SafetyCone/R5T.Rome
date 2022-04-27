@@ -2,10 +2,13 @@
 
 using R5T.Antium;
 
+using R5T.T0064;
+
 
 namespace R5T.Rome
 {
-    public class PublishPreFileCopyDeployAction : IPreFileCopyDeployAction
+    [ServiceImplementationMarker]
+    public class PublishPreFileCopyDeployAction : IPreFileCopyDeployAction, IServiceImplementation
     {
         private IPublishAction PublishAction { get; }
 

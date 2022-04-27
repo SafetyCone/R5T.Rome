@@ -6,10 +6,13 @@ using Microsoft.Extensions.Logging;
 
 using R5T.Pictia;
 
+using R5T.T0064;
+
 
 namespace R5T.Rome
 {
-    public class VerifyWebsiteStartedAction : RunRemoteScriptsActionBase, IPostFinalizeDeployAction
+    [ServiceImplementationMarker]
+    public class VerifyWebsiteStartedAction : RunRemoteScriptsActionBase, IPostFinalizeDeployAction, IServiceImplementation
     {
         private IRemoteServiceNameProvider RemoteServiceNameProvider { get; }
         private ILogger Logger { get; }
